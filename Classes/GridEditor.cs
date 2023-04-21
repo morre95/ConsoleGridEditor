@@ -19,7 +19,8 @@ namespace ConsoleGridEditor.Classes
             int x = 1;
             int y = 1;
 
-            Console.Clear();
+            CLearScreen();
+
             DrawGrid(gridRows, gridColumns, editGrid, x, y);
 
             while (true)
@@ -112,9 +113,15 @@ namespace ConsoleGridEditor.Classes
                     SaveToFile(editGrid);
                 }
 
-                Console.Clear();
+                CLearScreen();
                 DrawGrid(gridRows, gridColumns, editGrid, x, y);
             }
+        }
+
+        private static void CLearScreen()
+        {
+            // Clears the screen and the scrollback buffer in xterm-compatible terminals.
+            Console.Clear(); Console.WriteLine("\x1b[3J");
         }
 
         private static Grid[,] PopulateGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)

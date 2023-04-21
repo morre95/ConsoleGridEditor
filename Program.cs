@@ -40,7 +40,7 @@ namespace ConsoleGridEditor
 
         private static (int, int) SelectRowsAndColumns(int rows = 0, int columns = 0)
         {
-            return SelectNumber("Rows:", "Columns:", 26, 101, rows, columns);
+            return SelectNumber("Rows:", "Columns:", 101, 101, rows, columns);
         }
 
         private static (int, int) SelectNumber(string text1, string text2, int maxNum1 = 100, int maxNum2 = 100, int startWith1 = 0, int startWith2 = 0)
