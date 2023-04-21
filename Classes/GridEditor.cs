@@ -23,6 +23,9 @@ namespace ConsoleGridEditor.Classes
 
             DrawGrid(gridRows, gridColumns, editGrid, x, y);
 
+            int oldCursorLeft = Console.CursorLeft;
+            int oldCursorTop = Console.CursorTop;
+
             while (true)
             {
                 Console.SetCursorPosition(y, x + 1);
@@ -113,10 +116,70 @@ namespace ConsoleGridEditor.Classes
                 {
                     SaveToFile(editGrid);
                 }
+                else if (keyInfo.Key == ConsoleKey.R)
+                {
+                    Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
+                    string strColumns;
+                    int columns;
+                    do
+                    {
+                        Console.Write("Columns: ");
+                        strColumns = Console.ReadLine();
+                    } while (!int.TryParse(strColumns, out columns));
+
+                    string strRows;
+                    int rows;
+                    do
+                    {
+                        Console.Write("Rows: ");
+                        strRows = Console.ReadLine();
+                    } while (!int.TryParse(strRows, out rows));
+
+                    oldCursorLeft += Math.Min(0, Math.Abs(columns - gridColumns));
+                    oldCursorTop += Math.Max(0, rows - gridRows);
+
+                    gridRows = rows;
+                    gridColumns = columns;
+                    editGrid = ResizeGridArray(editGrid, rows, columns);
+                    // TODO: Throws exception when the resize multipla times
+                }
+                // TODO: Add resize function here
+                // TBD: Change to Grid[,] List<Grid> for better support of methods
 
                 CLearScreen();
                 DrawGrid(gridRows, gridColumns, editGrid, x, y);
             }
+        }
+
+        private static Grid[,] ResizeGridArray(Grid[,] original, int rows, int cols)
+        {
+            var newArray = new Grid[rows, cols];
+
+            // Populating the new array
+            for (int rows_for = 0; rows_for < rows; rows_for++)
+            {
+                for (int columns = 0; columns < cols; columns++)
+                {
+                    Grid grid = new Grid(columns, rows_for);
+                    if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
+                    {
+                        grid.SetSymbole("*");
+                    }
+                    else
+                    {
+                        grid.Clear();
+                    }
+
+                    newArray[rows_for, columns] = grid;
+                }
+            }
+
+            int minRows = Math.Min(rows, original.GetLength(0));
+            int minCols = Math.Min(cols, original.GetLength(1));
+            for (int i = 0; i < minRows; i++)
+                for (int j = 0; j < minCols; j++)
+                    newArray[i, j] = original[i, j];
+            return newArray;
         }
 
         private static void CLearScreen()
@@ -179,7 +242,7 @@ namespace ConsoleGridEditor.Classes
             Console.WriteLine(toPrint);
             Console.WriteLine("Move with arrow keys");
             Console.WriteLine("Spacebar = add wall, Enter to select emoji");
-            Console.WriteLine("L = Load from file, S = Save to file");
+            Console.WriteLine("L = Load from file, S = Save to file, R = Resize Grid");
         }
 
         static void SaveToFile(Grid[,] editGrid)
@@ -220,7 +283,7 @@ namespace ConsoleGridEditor.Classes
             {
                 Console.Clear();
 
-                Console.WriteLine($"File {Emoji.Point_Right} {Path.GetFileName(allJsonFIles[index]).Replace(".json", "")}");
+                Console.WriteLine($"File {Emoji.Arrow_Right_Hook} {Path.GetFileName(allJsonFIles[index]).Replace(".json", "")}");
                 ConsoleKeyInfo key = Console.ReadKey();
 
                 if (key.Key == ConsoleKey.UpArrow)
