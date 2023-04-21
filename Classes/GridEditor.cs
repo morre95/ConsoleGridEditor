@@ -25,6 +25,7 @@ namespace ConsoleGridEditor.Classes
 
             while (true)
             {
+                Console.SetCursorPosition(y, x + 1);
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
                 {

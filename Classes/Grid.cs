@@ -28,10 +28,7 @@ namespace ConsoleGridEditor.Classes
         public void SetSymbole(string symbole)
         {
             if (DoubleSpace && symbole.Length == 1)
-            {
                 Symbole = $"{symbole} ";
-                Console.WriteLine(symbole);
-            }
             else
                 Symbole = symbole;
         }
