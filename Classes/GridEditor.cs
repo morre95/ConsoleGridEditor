@@ -12,7 +12,7 @@ namespace ConsoleGridEditor.Classes
     {
 
         static string DefaultDir { get; set; } = Path.GetFullPath(@"grids\");
-        public static Grid[,] Editor(int gridRows, int gridColumns, bool useDoubleSpace = false)
+        public static void Editor(int gridRows, int gridColumns, bool useDoubleSpace = false)
         {
             Grid[,] editGrid = PopulateGrid(gridRows, gridColumns, useDoubleSpace);
 
@@ -99,12 +99,9 @@ namespace ConsoleGridEditor.Classes
                     editGrid[x, y].SetSymbole(fields[currentIndex].GetValue(null).ToString());
                     if (editGrid[x, y].DoubleSpace && editGrid[x, y].GetSymbole().Length == 1) editGrid[x, y].Symbole += " ";
                 }
-                else if (keyInfo.Key == ConsoleKey.Enter)
-                {
-                    return editGrid;
-                }
                 else if (keyInfo.Key == ConsoleKey.L)
                 {
+                    Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
                     Grid[,] temp = LoadFromFile();
 
                     gridRows = temp.GetLength(0);
@@ -114,6 +111,7 @@ namespace ConsoleGridEditor.Classes
                 }
                 else if (keyInfo.Key == ConsoleKey.S)
                 {
+                    Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
                     SaveToFile(editGrid);
                 }
                 else if (keyInfo.Key == ConsoleKey.R)

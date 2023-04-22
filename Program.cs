@@ -1,5 +1,6 @@
 ﻿using ConsoleGridEditor.Classes;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ConsoleGridEditor
 {
@@ -9,6 +10,20 @@ namespace ConsoleGridEditor
         {
             Console.OutputEncoding = Encoding.UTF8;
 
+            int selectedClass = ConsoleHelper.MultipleChoice(true, "New Grid", "Load Grid");
+
+            if (selectedClass == 0)
+            {
+                CreateNewGrid();
+            } 
+            else if (selectedClass == 1)
+            {
+                throw new NotImplementedException("Load is not yet implemented");
+            }
+        }
+
+        private static void CreateNewGrid()
+        {
             bool useDoubleSPace;
             string strYesNo = "bla bla";
             string[] yesNoArr = { "n", "y" };
