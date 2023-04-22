@@ -156,11 +156,11 @@ namespace ConsoleGridEditor.Classes
             var newArray = new Grid[rows, cols];
 
             // Populating the new array
-            for (int rows_for = 0; rows_for < rows; rows_for++)
+            for (int rowCounter = 0; rowCounter < rows; rowCounter++)
             {
-                for (int columns = 0; columns < cols; columns++)
+                for (int columnCounter = 0; columnCounter < cols; columnCounter++)
                 {
-                    Grid grid = new Grid(columns, rows_for);
+                    Grid grid = new Grid(columnCounter, rowCounter);
                     if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
                     {
                         grid.SetSymbole("*");
@@ -170,7 +170,7 @@ namespace ConsoleGridEditor.Classes
                         grid.Clear();
                     }
 
-                    newArray[rows_for, columns] = grid;
+                    newArray[rowCounter, columnCounter] = grid;
                 }
             }
 
@@ -196,8 +196,8 @@ namespace ConsoleGridEditor.Classes
             {
                 for (int columns = 0; columns < gridColumns; columns++)
                 {
-                    Grid grid = new Grid(columns, rows, useDoubleSpace);
-                    if (grid.x == 0 || grid.x > gridColumns - 2 || grid.y == 0 || grid.y > gridRows - 2)
+                    Grid grid = new Grid(rows, columns, useDoubleSpace);
+                    if (grid.x == 0 || grid.x > gridRows - 2 || grid.y == 0 || grid.y > gridColumns - 2)
                     {
                         grid.SetSymbole("*");
                     }
@@ -216,13 +216,13 @@ namespace ConsoleGridEditor.Classes
         static void DrawGrid(int gridRows, int gringColumns, Grid[,] editGrid, int x, int y)
         {
             string toPrint = "";
-            for (int col = 0; col < gridRows; col++)
+            for (int row = 0; row < gridRows; row++)
             {
-                for (int row = 0; row < gringColumns; row++)
+                for (int col = 0; col < gringColumns; col++)
                 {
-                    if (col == x && row == y)
+                    /*if (row == x && col == y)
                     {
-                        if (editGrid[col, row].DoubleSpace)
+                        if (editGrid[row, col].DoubleSpace)
                         {
                             toPrint += "+ ";
                         }
@@ -233,9 +233,9 @@ namespace ConsoleGridEditor.Classes
                     }
                     else
                     {
-                        toPrint += editGrid[col, row].GetSymbole();
-                    }
-
+                        toPrint += editGrid[row, col].GetSymbole();
+                    }*/
+                    toPrint += editGrid[row, col].GetSymbole();
                 }
                 toPrint += "\n";
             }
