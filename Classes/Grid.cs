@@ -24,6 +24,12 @@ namespace ConsoleGridEditor.Classes
         // TBD: Undra om inte hela iden med double space bör skrotas. Efteroms det blir förvirrande och så gör det koden svårhanterad. Antingen så skrotas alla emojis med två tecken eller så är det alltid double space
         public bool DoubleSpace { get; set; }
 
+        /// <summary>
+        /// Grid constructor
+        /// </summary>
+        /// <param name="X">Row</param>
+        /// <param name="Y">Column</param>
+        /// <param name="doubleSpace">Use double space or not</param>
         [JsonConstructor]
         public Grid(int X, int Y, bool doubleSpace = false)
         {
