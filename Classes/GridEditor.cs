@@ -28,7 +28,11 @@ namespace ConsoleGridEditor.Classes
 
             while (true)
             {
-                Console.SetCursorPosition(y, x + 1);
+                if (editGrid[x, y].DoubleSpace)
+                    Console.SetCursorPosition(y * 2, x + 1);
+                else
+                    Console.SetCursorPosition(y, x + 1);
+
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
                 {
