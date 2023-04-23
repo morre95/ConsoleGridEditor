@@ -8,8 +8,8 @@ namespace ConsoleGridEditor.Classes
 {
     internal class Emoji
     {
-        public const string blank_space = " ";
         public const string Hash = "#";
+        public const string blank_space = " ";
         public const string Zero = "0";
         public const string One = "1";
         public const string Two = "2";

@@ -67,9 +67,25 @@ namespace ConsoleGridEditor.Classes
                             editGrid[x, y].SetSymbole("*");
                     }
                 }
-                else if (keyInfo.Key == ConsoleKey.Enter)
+                else if (keyInfo.Key == ConsoleKey.Tab)
                 {
                     FieldInfo[] fields = typeof(Emoji).GetFields(BindingFlags.Public | BindingFlags.Static);
+                    // TBD: Hela den här double space grejen bör vara så att när man väljer ett tecken med double space så bör
+                    // gridden ritas upp med double space och inte ett val man gör när man skapar gridden
+                    if (!editGrid[x, y].DoubleSpace)
+                    {
+                        /*List<FieldInfo> newField = new List<FieldInfo>();
+                        for (int i = 0; i < fields.Length; i++)
+                        {
+                            if (fields[i].GetValue(null).ToString().Length == 1)
+                            {
+                                newField.Add(fields[i]);
+                            }
+                        }
+                        fields = newField.ToArray();*/
+                        fields = new List<FieldInfo>(fields).FindAll(f => f.GetValue(null).ToString().Length == 1).ToArray();
+                    }
+
                     int currentIndex = 0;
                     int totalFields = fields.Length;
 
@@ -85,11 +101,11 @@ namespace ConsoleGridEditor.Classes
 
                         if (key.Key == ConsoleKey.UpArrow)
                         {
-                            currentIndex = (currentIndex - 1 + totalFields) % totalFields;
+                            currentIndex = (currentIndex + 1) % totalFields;
                         }
                         else if (key.Key == ConsoleKey.DownArrow)
                         {
-                            currentIndex = (currentIndex + 1) % totalFields;
+                            currentIndex = (currentIndex - 1 + totalFields) % totalFields;
                         }
                         else if (key.Key == ConsoleKey.Enter)
                         {
@@ -141,7 +157,6 @@ namespace ConsoleGridEditor.Classes
                     editGrid = ResizeGridArray(editGrid, rows, columns);
                     // TODO: Throws exception when the resize multipla times
                 }
-                // TODO: Add resize function here
                 // TBD: Change to Grid[,] List<Grid> for better support of methods
 
                 CLearScreen();
@@ -239,7 +254,7 @@ namespace ConsoleGridEditor.Classes
             }
             Console.WriteLine(toPrint);
             Console.WriteLine("Move with arrow keys");
-            Console.WriteLine("Spacebar = add wall, Enter to select emoji");
+            Console.WriteLine("Spacebar = add wall, Tab to select emoji");
             Console.WriteLine("L = Load from file, S = Save to file, R = Resize Grid");
         }
 
