@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleGridEditor.Classes
 {
-    internal class GridEditor
+    internal static class GridEditor
     {
 
         static string DefaultDir { get; set; } = Path.GetFullPath(@"grids\");
-        public static void Editor(List<List<Grid>> gridList, bool useDoubleSpace = false)
+        public static void RunEditor(this List<List<Grid>> gridList, bool useDoubleSpace = false)
         {
 
             int gridRows = gridList.Count;
@@ -162,8 +162,10 @@ namespace ConsoleGridEditor.Classes
 
                     gridRows = rows;
                     gridColumns = columns;
-                    gridList = ResizeGridArray(gridList, rows, columns);
-                    // TODO: Throws exception when the resize multipla times
+                    gridList = ResizeGridList(gridList, rows, columns, useDoubleSpace);
+                    // FIXME: Throws exception when the resize multipla times
+                    // FIXME: Throws exeption when trying to resize when the grid is bigger then screen
+                    // FIXME: It is weard when trying to rezise
                 }
 
                 CLearScreen();
@@ -171,7 +173,7 @@ namespace ConsoleGridEditor.Classes
             }
         }
 
-        private static List<List<Grid>> ResizeGridArray(List<List<Grid>> original, int rows, int cols)
+        private static List<List<Grid>> ResizeGridList(List<List<Grid>> original, int rows, int cols, bool useDoubleSpace)
         {
             List<List<Grid>> newList = new List<List<Grid>>(rows);
             for(int row = 0; row < rows; row++)
@@ -179,7 +181,7 @@ namespace ConsoleGridEditor.Classes
                 List<Grid> newGrid = new List<Grid>(cols);
                 for(int col = 0; col < cols; col++)
                 {
-                    Grid grid = new Grid(rows, cols);
+                    Grid grid = new Grid(row, col, useDoubleSpace);
                     if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
                     {
                         grid.SetSymbole("*");
@@ -192,6 +194,19 @@ namespace ConsoleGridEditor.Classes
                 }
                 newList.Add(newGrid);
             }
+
+            int minRows = Math.Min(rows, original.Count);
+            int minCols = Math.Min(cols, original[0].Count);
+            for (int i = 0; i < minRows; i++)
+            {
+                for (int j = 0; j < minCols; j++)
+                {
+                    newList[i][j] = original[i][j];
+                }
+                    
+            }
+                
+
             return newList;
         }
 
@@ -306,7 +321,7 @@ namespace ConsoleGridEditor.Classes
             return allJsonFIles[index];
         }
 
-        static List<List<Grid>> LoadFromFile(string fileName)
+        public static List<List<Grid>> LoadFromFile(string fileName)
         {
             string jsonString = File.ReadAllText(fileName);
 

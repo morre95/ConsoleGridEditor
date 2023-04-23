@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ConsoleGridEditor
 {
@@ -24,13 +25,13 @@ namespace ConsoleGridEditor
             {
                 (int rows, int columns) = SelectRowsAndColumns();
                 List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, true);
-                GridEditor.Editor(gridList);
+                gridList.RunEditor();
             } 
             else if (selectedId == 1)
             {
                 (int rows, int columns) = SelectRowsAndColumns();
                 List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns);
-                GridEditor.Editor(gridList, true);
+                gridList.RunEditor(true);
             }
             else if (selectedId == 2)
             {
@@ -38,7 +39,9 @@ namespace ConsoleGridEditor
             }
             else if (selectedId >= 3)
             {
-                //files
+                // INFO: If you change Menu input. Change also change this
+                List<List<Grid>> gridList = GridEditor.LoadFromFile(files[selectedId - 3]);
+                gridList.RunEditor(gridList[0][0].DoubleSpace);
             }
         }
 
@@ -70,7 +73,7 @@ namespace ConsoleGridEditor
 
             (int rows, int columns) = SelectRowsAndColumns();
             List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, useDoubleSPace);
-            GridEditor.Editor(gridList, useDoubleSPace);
+            GridEditor.RunEditor(gridList, useDoubleSPace);
         }
 
         private static (int, int) SelectRowsAndColumns(int rows = 0, int columns = 0)
