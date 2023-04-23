@@ -13,16 +13,18 @@ namespace ConsoleGridEditor.Classes
     {
 
         static string DefaultDir { get; set; } = Path.GetFullPath(@"grids\");
-        public static void Editor(int gridRows, int gridColumns, bool useDoubleSpace = false)
+        public static void Editor(List<List<Grid>> gridList, bool useDoubleSpace = false)
         {
-            List<List<Grid>> gridList = PopulateEmptyGrid(gridRows, gridColumns, useDoubleSpace);
+
+            int gridRows = gridList.Count;
+            int gridColumns = gridList[0].Count;
 
             int x = 1;
             int y = 1;
 
             CLearScreen();
 
-            DrawGrid(gridRows, gridColumns, gridList, x, y);
+            DrawGrid(gridList, x, y);
 
             int oldCursorLeft = Console.CursorLeft;
             int oldCursorTop = Console.CursorTop;
@@ -123,7 +125,8 @@ namespace ConsoleGridEditor.Classes
                 else if (keyInfo.Key == ConsoleKey.L)
                 {
                     Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
-                    List<List<Grid>> temp = LoadFromFile();
+                    string fileName = SelectFile();
+                    List<List<Grid>> temp = LoadFromFile(fileName);
 
                     gridRows = temp.Count;
                     gridColumns = temp[0].Count; // TODO: Kolla om de verkligen behöver göra så här eftersom det är en port från array
@@ -164,7 +167,7 @@ namespace ConsoleGridEditor.Classes
                 }
 
                 CLearScreen();
-                DrawGrid(gridRows, gridColumns, gridList, x, y);
+                DrawGrid(gridList, x, y);
             }
         }
 
@@ -198,7 +201,7 @@ namespace ConsoleGridEditor.Classes
             Console.Clear(); Console.WriteLine("\x1b[3J");
         }
 
-        private static List<List<Grid>> PopulateEmptyGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
+        public static List<List<Grid>> PopulateEmptyGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
         {
             List<List<Grid>> gridList = new List<List<Grid>>(gridRows);
 
@@ -224,12 +227,12 @@ namespace ConsoleGridEditor.Classes
             return gridList;
         }
 
-        static void DrawGrid(int gridRows, int gringColumns, List<List<Grid>> editGrid, int x, int y)
+        static void DrawGrid(List<List<Grid>> gridList, int x, int y)
         {
             string toPrint = "";
-            for (int row = 0; row < gridRows; row++)
+            for (int row = 0; row < gridList.Count; row++)
             {
-                for (int col = 0; col < gringColumns; col++)
+                for (int col = 0; col < gridList[row].Count; col++)
                 {
                     /*if (row == x && col == y)
                     {
@@ -246,7 +249,7 @@ namespace ConsoleGridEditor.Classes
                     {
                         toPrint += editGrid[row, col].GetSymbole();
                     }*/
-                    toPrint += editGrid[row][col].GetSymbole();
+                    toPrint += gridList[row][col].GetSymbole();
                 }
                 toPrint += "\n";
             }
@@ -267,7 +270,7 @@ namespace ConsoleGridEditor.Classes
             File.WriteAllText(DefaultDir + fileName + ".json", jsonString);
         }
 
-        static string[] GetJsonFiles()
+        public static string[] GetJsonFiles()
         {
             return Directory.GetFiles(DefaultDir, "*.json", SearchOption.AllDirectories);
         }
@@ -303,9 +306,8 @@ namespace ConsoleGridEditor.Classes
             return allJsonFIles[index];
         }
 
-        static List<List<Grid>> LoadFromFile()
+        static List<List<Grid>> LoadFromFile(string fileName)
         {
-            string fileName = SelectFile();
             string jsonString = File.ReadAllText(fileName);
 
             List<List<Grid>> grid = JsonSerializer.Deserialize<List<List<Grid>>>(jsonString)!;
