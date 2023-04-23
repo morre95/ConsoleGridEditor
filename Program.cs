@@ -1,4 +1,5 @@
 ﻿using ConsoleGridEditor.Classes;
+using System;
 using System.Text;
 using System.Xml.Linq;
 
@@ -10,15 +11,34 @@ namespace ConsoleGridEditor
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            int selectedClass = ConsoleHelper.MultipleChoice(true, "New Grid", "Load Grid");
+            string[] files = GridEditor.GetJsonFiles();
+            List<string> opt = new List<string>(){ "New Grid", "New Grid With Compact Columns", "Load Grid" };
+            foreach (string file in files) 
+            { 
+                opt.Add($"Load file {Emoji.Arrow_Right_Hook} {Path.GetFileName(file).Replace(".json", "")}");
+            }
 
-            if (selectedClass == 0)
+            int selectedId = ConsoleHelper.MultipleChoice(true, opt);
+
+            if (selectedId == 0)
             {
-                CreateNewGrid();
+                (int rows, int columns) = SelectRowsAndColumns();
+                List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, true);
+                GridEditor.Editor(gridList);
             } 
-            else if (selectedClass == 1)
+            else if (selectedId == 1)
             {
-                throw new NotImplementedException("Load is not yet implemented");
+                (int rows, int columns) = SelectRowsAndColumns();
+                List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns);
+                GridEditor.Editor(gridList, true);
+            }
+            else if (selectedId == 2)
+            {
+                throw new NotImplementedException("Load funtion is not yet implemented");
+            }
+            else if (selectedId >= 3)
+            {
+                //files
             }
         }
 
@@ -49,8 +69,8 @@ namespace ConsoleGridEditor
             } while (!bool.TryParse(strYesNo, out useDoubleSPace));
 
             (int rows, int columns) = SelectRowsAndColumns();
-
-            GridEditor.Editor(rows, columns, useDoubleSPace);
+            List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, useDoubleSPace);
+            GridEditor.Editor(gridList, useDoubleSPace);
         }
 
         private static (int, int) SelectRowsAndColumns(int rows = 0, int columns = 0)

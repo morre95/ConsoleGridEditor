@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace ConsoleGridEditor.Classes
 {
     public class ConsoleHelper
     {
-        public static int MultipleChoice(bool canCancel, params string[] options)
+        public static int MultipleChoice(bool canCancel, List<string> options)
         {
             const int startX = 0;
             const int startY = 0;
@@ -25,7 +26,7 @@ namespace ConsoleGridEditor.Classes
             {
                 Console.Clear();
 
-                for (int i = 0; i < options.Length; i++)
+                for (int i = 0; i < options.Count; i++)
                 {
                     Console.SetCursorPosition(startX + i % optionsPerLine * spacingPerLine, startY + i / optionsPerLine);
 
@@ -66,7 +67,7 @@ namespace ConsoleGridEditor.Classes
                         }
                     case ConsoleKey.DownArrow:
                         {
-                            if (currentSelection + optionsPerLine < options.Length)
+                            if (currentSelection + optionsPerLine < options.Count)
                                 currentSelection += optionsPerLine;
                             break;
                         }
