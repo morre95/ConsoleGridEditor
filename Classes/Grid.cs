@@ -21,6 +21,7 @@ namespace ConsoleGridEditor.Classes
 
         public string Symbole { get; set; }
 
+        // TBD: Undra om inte hela iden med double space bör skrotas. Efteroms det blir förvirrande och så gör det koden svårhanterad. Antingen så skrotas alla emojis med två tecken eller så är det alltid double space
         public bool DoubleSpace { get; set; }
 
         [JsonConstructor]

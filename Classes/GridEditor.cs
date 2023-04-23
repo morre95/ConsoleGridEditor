@@ -162,7 +162,6 @@ namespace ConsoleGridEditor.Classes
                     gridList = ResizeGridArray(gridList, rows, columns);
                     // TODO: Throws exception when the resize multipla times
                 }
-                // TBD: Change to Grid[,] List<Grid> for better support of methods
 
                 CLearScreen();
                 DrawGrid(gridRows, gridColumns, gridList, x, y);
@@ -191,33 +190,6 @@ namespace ConsoleGridEditor.Classes
                 newList.Add(newGrid);
             }
             return newList;
-            /*var newArray = new Grid[rows, cols];
-
-            // Populating the new array
-            for (int rowCounter = 0; rowCounter < rows; rowCounter++)
-            {
-                for (int columnCounter = 0; columnCounter < cols; columnCounter++)
-                {
-                    Grid grid = new Grid(columnCounter, rowCounter);
-                    if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
-                    {
-                        grid.SetSymbole("*");
-                    }
-                    else
-                    {
-                        grid.Clear();
-                    }
-
-                    newArray[rowCounter, columnCounter] = grid;
-                }
-            }
-
-            int minRows = Math.Min(rows, original.GetLength(0));
-            int minCols = Math.Min(cols, original.GetLength(1));
-            for (int i = 0; i < minRows; i++)
-                for (int j = 0; j < minCols; j++)
-                    newArray[i, j] = original[i, j];
-            return newArray;*/
         }
 
         private static void CLearScreen()
@@ -288,17 +260,6 @@ namespace ConsoleGridEditor.Classes
         {
             Console.Write("Filename: ");
             string fileName = Console.ReadLine()!;
-
-            /*List<Grid[]> rows = new List<Grid[]>();
-            for (int i = 0; i < editGrid.GetLength(0); i++)
-            {
-                Grid[] row = new Grid[editGrid.GetLength(1)];
-                for (int j = 0; j < editGrid.GetLength(1); j++)
-                {
-                    row[j] = editGrid[i, j];
-                }
-                rows.Add(row);
-            }*/
 
             if (!Directory.Exists(DefaultDir)) Directory.CreateDirectory(DefaultDir);
 
