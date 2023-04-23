@@ -14,7 +14,7 @@ namespace ConsoleGridEditor.Classes
         static string DefaultDir { get; set; } = Path.GetFullPath(@"grids\");
         public static void Editor(int gridRows, int gridColumns, bool useDoubleSpace = false)
         {
-            Grid[,] editGrid = PopulateGrid(gridRows, gridColumns, useDoubleSpace);
+            List<List<Grid>> editGrid = PopulateEmptyGrid(gridRows, gridColumns, useDoubleSpace);
 
             int x = 1;
             int y = 1;
@@ -52,19 +52,19 @@ namespace ConsoleGridEditor.Classes
                 }
                 else if (keyInfo.Key == ConsoleKey.Spacebar)
                 {
-                    if (editGrid[x, y].DoubleSpace)
+                    if (editGrid[x][y].DoubleSpace)
                     {
-                        if (editGrid[x, y].GetSymbole() != "  ")
-                            editGrid[x, y].SetSymbole("  ");
+                        if (editGrid[x][y].GetSymbole() != "  ")
+                            editGrid[x][y].SetSymbole("  ");
                         else
-                            editGrid[x, y].SetSymbole("* ");
+                            editGrid[x][y].SetSymbole("* ");
                     }
                     else
                     {
-                        if (editGrid[x, y].GetSymbole() != " ")
-                            editGrid[x, y].SetSymbole(" ");
+                        if (editGrid[x][y].GetSymbole() != " ")
+                            editGrid[x][y].SetSymbole(" ");
                         else
-                            editGrid[x, y].SetSymbole("*");
+                            editGrid[x][y].SetSymbole("*");
                     }
                 }
                 else if (keyInfo.Key == ConsoleKey.Tab)
@@ -72,7 +72,7 @@ namespace ConsoleGridEditor.Classes
                     FieldInfo[] fields = typeof(Emoji).GetFields(BindingFlags.Public | BindingFlags.Static);
                     // TBD: Hela den här double space grejen bör vara så att när man väljer ett tecken med double space så bör
                     // gridden ritas upp med double space och inte ett val man gör när man skapar gridden
-                    if (!editGrid[x, y].DoubleSpace)
+                    if (!editGrid[x][y].DoubleSpace)
                     {
                         /*List<FieldInfo> newField = new List<FieldInfo>();
                         for (int i = 0; i < fields.Length; i++)
@@ -112,17 +112,17 @@ namespace ConsoleGridEditor.Classes
                             break;
                         }
                     }
-                    editGrid[x, y].SetSymbole(fields[currentIndex].GetValue(null).ToString());
-                    if (editGrid[x, y].DoubleSpace && editGrid[x, y].GetSymbole().Length == 1) editGrid[x, y].Symbole += " ";
+                    editGrid[x][y].SetSymbole(fields[currentIndex].GetValue(null).ToString());
+                    if (editGrid[x][y].DoubleSpace && editGrid[x][y].GetSymbole().Length == 1) editGrid[x][y].Symbole += " ";
                 }
                 else if (keyInfo.Key == ConsoleKey.L)
                 {
                     Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
-                    Grid[,] temp = LoadFromFile();
+                    List<List<Grid>> temp = LoadFromFile();
 
-                    gridRows = temp.GetLength(0);
-                    gridColumns = temp.GetLength(1);
-                    editGrid = PopulateGrid(gridRows, gridColumns, useDoubleSpace);
+                    gridRows = temp.Count;
+                    gridColumns = temp[0].Count; // TODO: Kolla om de verkligen behöver göra så här eftersom det är en port från array
+                    editGrid = PopulateEmptyGrid(gridRows, gridColumns, useDoubleSpace);
                     editGrid = temp;
                 }
                 else if (keyInfo.Key == ConsoleKey.S)
@@ -164,9 +164,29 @@ namespace ConsoleGridEditor.Classes
             }
         }
 
-        private static Grid[,] ResizeGridArray(Grid[,] original, int rows, int cols)
+        private static List<List<Grid>> ResizeGridArray(List<List<Grid>> original, int rows, int cols)
         {
-            var newArray = new Grid[rows, cols];
+            List<List<Grid>> newList = new List<List<Grid>>(rows);
+            for(int row = 0; row < rows; row++)
+            {
+                List<Grid> newGrid = new List<Grid>(cols);
+                for(int col = 0; col < cols; col++)
+                {
+                    Grid grid = new Grid(rows, cols);
+                    if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
+                    {
+                        grid.SetSymbole("*");
+                    }
+                    else
+                    {
+                        grid.Clear();
+                    }
+                    newGrid.Add(grid);
+                }
+                newList.Add(newGrid);
+            }
+            return newList;
+            /*var newArray = new Grid[rows, cols];
 
             // Populating the new array
             for (int rowCounter = 0; rowCounter < rows; rowCounter++)
@@ -192,7 +212,7 @@ namespace ConsoleGridEditor.Classes
             for (int i = 0; i < minRows; i++)
                 for (int j = 0; j < minCols; j++)
                     newArray[i, j] = original[i, j];
-            return newArray;
+            return newArray;*/
         }
 
         private static void CLearScreen()
@@ -201,12 +221,13 @@ namespace ConsoleGridEditor.Classes
             Console.Clear(); Console.WriteLine("\x1b[3J");
         }
 
-        private static Grid[,] PopulateGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
+        private static List<List<Grid>> PopulateEmptyGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
         {
-            Grid[,] editGrid = new Grid[gridRows, gridColumns];
+            List<List<Grid>> gridList = new List<List<Grid>>(gridRows);
 
             for (int rows = 0; rows < gridRows; rows++)
             {
+                List<Grid> newGrid = new List<Grid>(gridColumns);
                 for (int columns = 0; columns < gridColumns; columns++)
                 {
                     Grid grid = new Grid(rows, columns, useDoubleSpace);
@@ -218,15 +239,15 @@ namespace ConsoleGridEditor.Classes
                     {
                         grid.Clear();
                     }
-
-                    editGrid[rows, columns] = grid;
+                    newGrid.Add(grid);
                 }
+                gridList.Add(newGrid);
             }
 
-            return editGrid;
+            return gridList;
         }
 
-        static void DrawGrid(int gridRows, int gringColumns, Grid[,] editGrid, int x, int y)
+        static void DrawGrid(int gridRows, int gringColumns, List<List<Grid>> editGrid, int x, int y)
         {
             string toPrint = "";
             for (int row = 0; row < gridRows; row++)
@@ -248,7 +269,7 @@ namespace ConsoleGridEditor.Classes
                     {
                         toPrint += editGrid[row, col].GetSymbole();
                     }*/
-                    toPrint += editGrid[row, col].GetSymbole();
+                    toPrint += editGrid[row][col].GetSymbole();
                 }
                 toPrint += "\n";
             }
@@ -258,12 +279,12 @@ namespace ConsoleGridEditor.Classes
             Console.WriteLine("L = Load from file, S = Save to file, R = Resize Grid");
         }
 
-        static void SaveToFile(Grid[,] editGrid)
+        static void SaveToFile(List<List<Grid>> gridList)
         {
             Console.Write("Filename: ");
             string fileName = Console.ReadLine()!;
 
-            List<Grid[]> rows = new List<Grid[]>();
+            /*List<Grid[]> rows = new List<Grid[]>();
             for (int i = 0; i < editGrid.GetLength(0); i++)
             {
                 Grid[] row = new Grid[editGrid.GetLength(1)];
@@ -272,11 +293,11 @@ namespace ConsoleGridEditor.Classes
                     row[j] = editGrid[i, j];
                 }
                 rows.Add(row);
-            }
+            }*/
 
             if (!Directory.Exists(DefaultDir)) Directory.CreateDirectory(DefaultDir);
 
-            string jsonString = JsonSerializer.Serialize(rows);
+            string jsonString = JsonSerializer.Serialize(gridList);
             File.WriteAllText(DefaultDir + fileName + ".json", jsonString);
         }
 
@@ -316,20 +337,20 @@ namespace ConsoleGridEditor.Classes
             return allJsonFIles[index];
         }
 
-        static Grid[,] LoadFromFile()
+        static List<List<Grid>> LoadFromFile()
         {
             string fileName = SelectFile();
             string jsonString = File.ReadAllText(fileName);
 
-            List<Grid[]> rows = JsonSerializer.Deserialize<List<Grid[]>>(jsonString)!;
-            Grid[,] grid = new Grid[rows.Count, rows[0].Length];
+            List<List<Grid>> grid = JsonSerializer.Deserialize<List<List<Grid>>>(jsonString)!;
+            /*Grid[,] grid = new Grid[rows.Count, rows[0].Length];
             for (int i = 0; i < rows.Count; i++)
             {
                 for (int j = 0; j < rows[i].Length; j++)
                 {
                     grid[i, j] = rows[i][j];
                 }
-            }
+            }*/
 
             return grid;
         }

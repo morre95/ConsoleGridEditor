@@ -9,8 +9,14 @@ namespace ConsoleGridEditor.Classes
 {
     internal class Grid
     {
+        /// <summary>
+        /// Row
+        /// </summary>
         public int x { get; set; }
 
+        /// <summary>
+        /// Column
+        /// </summary>
         public int y { get; set; }
 
         public string Symbole { get; set; }
