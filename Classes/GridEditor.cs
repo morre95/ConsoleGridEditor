@@ -13,11 +13,11 @@ namespace ConsoleGridEditor.Classes
     {
 
         static string DefaultDir { get; set; } = Path.GetFullPath(@"grids\");
-        public static void RunEditor(this List<List<Grid>> gridList, bool useDoubleSpace = false)
+        public static void RunEditor(this Grid<string> gridList, bool useDoubleSpace = false)
         {
 
-            int gridRows = gridList.Count;
-            int gridColumns = gridList[0].Count;
+            int gridRows = gridList.RowCount();
+            int gridColumns = gridList.ColumnCount();
 
             int x = 1;
             int y = 1;
@@ -31,10 +31,12 @@ namespace ConsoleGridEditor.Classes
 
             while (true)
             {
-                if (gridList[x][y].DoubleSpace)
+                /*if (gridList[x][y].DoubleSpace)
                     Console.SetCursorPosition(y * 2, x + 1);
                 else
-                    Console.SetCursorPosition(y, x + 1);
+                    Console.SetCursorPosition(y, x + 1);*/
+
+                Console.SetCursorPosition(y * 2, x + 1);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
@@ -59,7 +61,7 @@ namespace ConsoleGridEditor.Classes
                 }
                 else if (keyInfo.Key == ConsoleKey.Spacebar)
                 {
-                    if (gridList[x][y].DoubleSpace)
+                    /*if (gridList[x][y].DoubleSpace)
                     {
                         if (gridList[x][y].GetSymbole() != "  ")
                             gridList[x][y].SetSymbole(" ");
@@ -72,6 +74,14 @@ namespace ConsoleGridEditor.Classes
                             gridList[x][y].SetSymbole(" ");
                         else
                             gridList[x][y].SetSymbole("*");
+                    }*/
+                    if (gridList.GetValue(x, y) != "  ")
+                    {
+                        gridList.SetValue(x, y, " ");
+                    }
+                    else
+                    {
+                        gridList.SetValue(x, y, "*");
                     }
                 }
                 else if (keyInfo.Key == ConsoleKey.Tab)
@@ -79,8 +89,8 @@ namespace ConsoleGridEditor.Classes
                     FieldInfo[] fields = typeof(Emoji).GetFields(BindingFlags.Public | BindingFlags.Static);
                     // TBD: Hela den här double space grejen bör vara så att när man väljer ett tecken med double space så bör
                     // gridden ritas upp med double space och inte ett val man gör när man skapar gridden
-                    if (!gridList[x][y].DoubleSpace)
-                    {
+                    //if (!gridList[x][y].DoubleSpace)
+                    //{
                         /*List<FieldInfo> newField = new List<FieldInfo>();
                         for (int i = 0; i < fields.Length; i++)
                         {
@@ -90,8 +100,8 @@ namespace ConsoleGridEditor.Classes
                             }
                         }
                         fields = newField.ToArray();*/
-                        fields = new List<FieldInfo>(fields).FindAll(f => f.GetValue(null).ToString().Length == 1).ToArray();
-                    }
+                        //fields = new List<FieldInfo>(fields).FindAll(f => f.GetValue(null).ToString().Length == 1).ToArray();
+                    //}
 
                     int currentIndex = 0;
                     int totalFields = fields.Length;
@@ -119,17 +129,17 @@ namespace ConsoleGridEditor.Classes
                             break;
                         }
                     }
-                    gridList[x][y].SetSymbole(fields[currentIndex].GetValue(null).ToString());
-                    if (gridList[x][y].DoubleSpace && gridList[x][y].GetSymbole().Length == 1) gridList[x][y].Symbole += " ";
+                    gridList.SetValue(x, y, fields[currentIndex].GetValue(null).ToString());
+                    //if (gridList[x][y].DoubleSpace && gridList[x][y].GetSymbole().Length == 1) gridList[x][y].Symbole += " ";
                 }
                 else if (keyInfo.Key == ConsoleKey.L)
                 {
                     Console.SetCursorPosition(oldCursorLeft, oldCursorTop);
                     string fileName = SelectFile();
-                    List<List<Grid>> temp = LoadFromFile(fileName);
+                    Grid<string> temp = LoadFromFile(fileName);
 
-                    gridRows = temp.Count;
-                    gridColumns = temp[0].Count; // TODO: Kolla om de verkligen behöver göra så här eftersom det är en port från array
+                    gridRows = temp.RowCount();
+                    gridColumns = temp.ColumnCount(); // TODO: Kolla om de verkligen behöver göra så här eftersom det är en port från array
                     gridList = PopulateEmptyGrid(gridRows, gridColumns, useDoubleSpace);
                     gridList = temp;
                 }
@@ -173,39 +183,36 @@ namespace ConsoleGridEditor.Classes
             }
         }
 
-        private static List<List<Grid>> ResizeGridList(List<List<Grid>> original, int rows, int cols, bool useDoubleSpace)
+        private static Grid<string> ResizeGridList(Grid<string> original, int rows, int cols, bool useDoubleSpace)
         {
-            List<List<Grid>> newList = new List<List<Grid>>(rows);
+            Grid<string> newList = new StringGrid(rows, cols);
             for(int row = 0; row < rows; row++)
             {
-                List<Grid> newGrid = new List<Grid>(cols);
                 for(int col = 0; col < cols; col++)
                 {
-                    Grid grid = new Grid(row, col, useDoubleSpace);
-                    if (grid.x == 0 || grid.x > cols - 2 || grid.y == 0 || grid.y > rows - 2)
+                    if (row == 0 || row > rows - 2 || col == 0 || col > cols - 2)
                     {
-                        grid.SetSymbole("*");
+                        newList.SetValue(row, col, "*");
                     }
                     else
                     {
-                        grid.Clear();
+                        newList.SetValue(row, col, " ");
                     }
-                    newGrid.Add(grid);
                 }
-                newList.Add(newGrid);
             }
 
-            int minRows = Math.Min(rows, original.Count);
-            int minCols = Math.Min(cols, original[0].Count);
+            int minRows = Math.Min(rows, original.RowCount());
+            int minCols = Math.Min(cols, original.ColumnCount());
+            Debug.WriteLine($"mr = {minRows}, mc = {minCols}");
             for (int i = 0; i < minRows; i++)
             {
                 for (int j = 0; j < minCols; j++)
                 {
-                    newList[i][j] = original[i][j];
+                    if (newList.GetValue(i, j) != "* ")
+                        newList.SetValue(i, j, original.GetValue(i, j));
                 }
                     
             }
-                
 
             return newList;
         }
@@ -216,38 +223,34 @@ namespace ConsoleGridEditor.Classes
             Console.Clear(); Console.WriteLine("\x1b[3J");
         }
 
-        public static List<List<Grid>> PopulateEmptyGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
+        public static Grid<string> PopulateEmptyGrid(int gridRows, int gridColumns, bool useDoubleSpace = false)
         {
-            List<List<Grid>> gridList = new List<List<Grid>>(gridRows);
+            Grid<string> gridList = new StringGrid(gridRows, gridColumns);
 
             for (int rows = 0; rows < gridRows; rows++)
             {
-                List<Grid> newGrid = new List<Grid>(gridColumns);
                 for (int columns = 0; columns < gridColumns; columns++)
                 {
-                    Grid grid = new Grid(rows, columns, useDoubleSpace);
-                    if (grid.x == 0 || grid.x > gridRows - 2 || grid.y == 0 || grid.y > gridColumns - 2)
+                    if (rows == 0 || rows > gridRows - 2 || columns == 0 || columns > gridColumns - 2)
                     {
-                        grid.SetSymbole("*");
+                        gridList.SetValue(rows, columns, "*");
                     }
                     else
                     {
-                        grid.Clear();
+                        gridList.SetValue(rows, columns, " ");
                     }
-                    newGrid.Add(grid);
                 }
-                gridList.Add(newGrid);
             }
 
             return gridList;
         }
 
-        static void DrawGrid(List<List<Grid>> gridList, int x, int y)
+        static void DrawGrid(Grid<string> gridList, int x, int y)
         {
             string toPrint = "";
-            for (int row = 0; row < gridList.Count; row++)
+            for (int row = 0; row < gridList.RowCount(); row++)
             {
-                for (int col = 0; col < gridList[row].Count; col++)
+                for (int col = 0; col < gridList.ColumnCount(); col++)
                 {
                     /*if (row == x && col == y)
                     {
@@ -264,7 +267,7 @@ namespace ConsoleGridEditor.Classes
                     {
                         toPrint += editGrid[row, col].GetSymbole();
                     }*/
-                    toPrint += gridList[row][col].GetSymbole();
+                    toPrint += gridList.GetValue(row, col);
                 }
                 toPrint += "\n";
             }
@@ -274,7 +277,7 @@ namespace ConsoleGridEditor.Classes
             Console.WriteLine("L = Load from file, S = Save to file, R = Resize Grid");
         }
 
-        static void SaveToFile(List<List<Grid>> gridList)
+        static void SaveToFile(Grid<string> gridList)
         {
             Console.Write("Filename: ");
             string fileName = Console.ReadLine()!;
@@ -321,11 +324,11 @@ namespace ConsoleGridEditor.Classes
             return allJsonFIles[index];
         }
 
-        public static List<List<Grid>> LoadFromFile(string fileName)
+        public static Grid<string> LoadFromFile(string fileName)
         {
             string jsonString = File.ReadAllText(fileName);
 
-            List<List<Grid>> grid = JsonSerializer.Deserialize<List<List<Grid>>>(jsonString)!;
+            Grid<string> grid = JsonSerializer.Deserialize<Grid<string>>(jsonString)!;
             /*Grid[,] grid = new Grid[rows.Count, rows[0].Length];
             for (int i = 0; i < rows.Count; i++)
             {

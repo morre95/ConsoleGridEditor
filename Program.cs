@@ -12,6 +12,9 @@ namespace ConsoleGridEditor
         {
             Console.OutputEncoding = Encoding.UTF8;
 
+            //Grid<string> g = GridEditor.PopulateEmptyGrid(20, 20, true);
+            //g.RunEditor(true);
+            //return;
             string[] files = GridEditor.GetJsonFiles();
             List<string> opt = new List<string>(){ "New Grid", "New Grid With Compact Columns", "Load Grid" };
             foreach (string file in files) 
@@ -24,13 +27,13 @@ namespace ConsoleGridEditor
             if (selectedId == 0)
             {
                 (int rows, int columns) = SelectRowsAndColumns();
-                List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, true);
-                gridList.RunEditor();
+                Grid<string> gridList = GridEditor.PopulateEmptyGrid(rows, columns, true);
+                gridList.RunEditor(true);
             } 
             else if (selectedId == 1)
             {
                 (int rows, int columns) = SelectRowsAndColumns();
-                List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns);
+                Grid<string> gridList = GridEditor.PopulateEmptyGrid(rows, columns);
                 gridList.RunEditor(true);
             }
             else if (selectedId == 2)
@@ -40,8 +43,9 @@ namespace ConsoleGridEditor
             else if (selectedId >= 3)
             {
                 // INFO: If you change Menu input. Change also change this
-                List<List<Grid>> gridList = GridEditor.LoadFromFile(files[selectedId - 3]);
-                gridList.RunEditor(gridList[0][0].DoubleSpace);
+                Grid<string> gridList = GridEditor.LoadFromFile(files[selectedId - 3]);
+                //gridList.RunEditor(gridList[0][0].DoubleSpace);
+                gridList.RunEditor(true);
             }
         }
 
@@ -72,7 +76,7 @@ namespace ConsoleGridEditor
             } while (!bool.TryParse(strYesNo, out useDoubleSPace));
 
             (int rows, int columns) = SelectRowsAndColumns();
-            List<List<Grid>> gridList = GridEditor.PopulateEmptyGrid(rows, columns, useDoubleSPace);
+            Grid<string> gridList = GridEditor.PopulateEmptyGrid(rows, columns, useDoubleSPace);
             GridEditor.RunEditor(gridList, useDoubleSPace);
         }
 

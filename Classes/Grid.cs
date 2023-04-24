@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -12,7 +13,49 @@ namespace ConsoleGridEditor.Classes
     // INFO: https://codereview.stackexchange.com/a/192737
     // INFO: Tester i ConsoleGameEditor__Slask projekter
 
-    internal class Grid
+    public abstract class Grid<T>
+    {
+        private T[,] gridRepository;
+
+        public Grid(int rows, int columns)
+        {
+            this.gridRepository = new T[rows, columns];
+        }
+
+        virtual public T GetValue(int rowNumber, int columnNumber)
+        {
+            return gridRepository[rowNumber, columnNumber];
+        }
+
+        virtual public void SetValue(int rowNumber, int columnNumber, T inputItem)
+        {
+            gridRepository[rowNumber, columnNumber] = inputItem;
+        }
+
+        virtual public int RowCount()
+        {
+            return gridRepository.GetLength(0);
+        }
+
+        virtual public int ColumnCount()
+        {
+            return gridRepository.GetLength(1);
+        }
+    }
+
+    public class StringGrid : Grid<string>
+    {
+        public StringGrid(int rows, int columns) : base(rows, columns)
+        {
+        }
+
+        public override void SetValue(int rowNumber, int columnNumber, string inputItem)
+        {
+            base.SetValue(rowNumber, columnNumber, $"{inputItem, -2}");
+        }
+    }
+
+    /*internal class Grid
     {
         /// <summary>
         /// Row
@@ -70,5 +113,5 @@ namespace ConsoleGridEditor.Classes
         {
             DoubleSpace = spacing;
         }
-    }
+    }*/
 }
