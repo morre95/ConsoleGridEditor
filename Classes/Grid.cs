@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleGridEditor.Classes
 {
+
+    // TBD: Kolla om StringGrid är ett alternatic. Mycket snabbare enligt mina tester. Till och med snabbare än Grin[,]
+    // INFO: https://codereview.stackexchange.com/a/192737
+    // INFO: Tester i ConsoleGameEditor__Slask projekter
+
     internal class Grid
     {
         /// <summary>
@@ -21,7 +26,9 @@ namespace ConsoleGridEditor.Classes
 
         public string Symbole { get; set; }
 
-        // TBD: Undra om inte hela iden med double space bör skrotas. Efteroms det blir förvirrande och så gör det koden svårhanterad. Antingen så skrotas alla emojis med två tecken eller så är det alltid double space
+        // TBD: Undra om inte hela iden med double space bör skrotas. Efteroms det blir förvirrande och så gör det koden svårhanterad.
+        // TBD: Antingen så skrotas alla emojis med två tecken eller så är det alltid double space
+        // TBD: Om inte annat så bör denna varibel inte sättas här
         public bool DoubleSpace { get; set; }
 
         /// <summary>
