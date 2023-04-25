@@ -265,12 +265,24 @@ namespace ConsoleGridEditor.Classes
             Console.WriteLine("L = Load from file, S = Save to file, R = Resize Grid");
         }
 
-        static void SaveToFile(Grid<string> gridList)
+        static void SaveToFile(Grid<string> grid)
         {
             Console.Write("Filename: ");
             string fileName = Console.ReadLine()!;
 
             if (!Directory.Exists(DefaultDir)) Directory.CreateDirectory(DefaultDir);
+
+            List<List<string>> gridList = new List<List<string>>();
+            for (int row = 0; row < grid.RowCount(); row++)
+            {
+                List<string> newRow = new List<string>();
+                for (int col = 0; col < grid.ColumnCount(); col++)
+                {
+                    newRow.Add(grid.GetValue(row, col));
+                }
+                gridList.Add(newRow);
+            }
+
 
             string jsonString = JsonSerializer.Serialize(gridList);
             File.WriteAllText(DefaultDir + fileName + ".json", jsonString);
@@ -316,7 +328,16 @@ namespace ConsoleGridEditor.Classes
         {
             string jsonString = File.ReadAllText(fileName);
 
-            Grid<string> grid = JsonSerializer.Deserialize<Grid<string>>(jsonString)!;
+            List<List<string>> gridList = JsonSerializer.Deserialize< List<List<string>>>(jsonString)!;
+
+            Grid<string> grid = new StringGrid(gridList.Count, gridList[0].Count);
+            for (int row = 0; row < gridList.Count; row++)
+            {
+                for (int col = 0; col < gridList[row].Count; col++)
+                {
+                    grid.SetValue(row, col, gridList[row][col]);
+                }
+            }
 
             return grid;
         }
