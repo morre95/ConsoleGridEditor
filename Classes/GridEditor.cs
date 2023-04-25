@@ -61,20 +61,6 @@ namespace ConsoleGridEditor.Classes
                 }
                 else if (keyInfo.Key == ConsoleKey.Spacebar)
                 {
-                    /*if (gridList[x][y].DoubleSpace)
-                    {
-                        if (gridList[x][y].GetSymbole() != "  ")
-                            gridList[x][y].SetSymbole(" ");
-                        else
-                            gridList[x][y].SetSymbole("*");
-                    }
-                    else
-                    {
-                        if (gridList[x][y].GetSymbole() != " ")
-                            gridList[x][y].SetSymbole(" ");
-                        else
-                            gridList[x][y].SetSymbole("*");
-                    }*/
                     if (useDoubleSpace)
                     {
                         if (gridList.GetValue(x, y) != "  ")
@@ -154,7 +140,7 @@ namespace ConsoleGridEditor.Classes
                     Grid<string> temp = LoadFromFile(fileName);
 
                     gridRows = temp.RowCount();
-                    gridColumns = temp.ColumnCount(); // TODO: Kolla om de verkligen behöver göra så här eftersom det är en port från array
+                    gridColumns = temp.ColumnCount();
                     gridList = PopulateEmptyGrid(gridRows, gridColumns, useDoubleSpace);
                     gridList = temp;
                 }
@@ -222,7 +208,6 @@ namespace ConsoleGridEditor.Classes
             {
                 for (int j = 0; j < minCols; j++)
                 { 
-                    // TBD: Implement the use of double space
                     if (useDoubleSpace && newList.GetValue(i, j) != "* ")
                         newList.SetValue(i, j, original.GetValue(i, j));
                     else if (newList.GetValue(i, j) != "*") newList.SetValue(i, j, original.GetValue(i, j));
