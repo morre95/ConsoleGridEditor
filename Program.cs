@@ -34,7 +34,7 @@ namespace ConsoleGridEditor
             {
                 (int rows, int columns) = SelectRowsAndColumns();
                 Grid<string> gridList = GridEditor.PopulateEmptyGrid(rows, columns);
-                gridList.RunEditor(true);
+                gridList.RunEditor();
             }
             else if (selectedId == 2)
             {

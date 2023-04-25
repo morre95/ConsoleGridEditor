@@ -41,6 +41,12 @@ namespace ConsoleGridEditor.Classes
         {
             return gridRepository.GetLength(1);
         }
+
+        virtual public void AppendValue(int rowNumber, int columnNumber, T inputItem)
+        {
+            //gridRepository[rowNumber, columnNumber] += inputItem;
+            throw new NotImplementedException();
+        }
     }
 
     public class StringGrid : Grid<string>
@@ -49,10 +55,16 @@ namespace ConsoleGridEditor.Classes
         {
         }
 
-        public override void SetValue(int rowNumber, int columnNumber, string inputItem)
+        public override void AppendValue(int rowNumber, int columnNumber, string inputItem)
         {
-            base.SetValue(rowNumber, columnNumber, $"{inputItem, -2}");
+            string temp = GetValue(rowNumber, columnNumber);
+            SetValue(rowNumber, columnNumber, temp + inputItem);
         }
+
+        /*public override void SetValue(int rowNumber, int columnNumber, string inputItem)
+        {   // TBD: This method is only for double space
+            base.SetValue(rowNumber, columnNumber, $"{inputItem,-2}");
+        }*/
     }
 
     /*internal class Grid

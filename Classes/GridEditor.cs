@@ -31,12 +31,12 @@ namespace ConsoleGridEditor.Classes
 
             while (true)
             {
-                /*if (gridList[x][y].DoubleSpace)
+                if (useDoubleSpace)
                     Console.SetCursorPosition(y * 2, x + 1);
                 else
-                    Console.SetCursorPosition(y, x + 1);*/
+                    Console.SetCursorPosition(y, x + 1);
 
-                Console.SetCursorPosition(y * 2, x + 1);
+                //Console.SetCursorPosition(y * 2, x + 1);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
@@ -75,14 +75,29 @@ namespace ConsoleGridEditor.Classes
                         else
                             gridList[x][y].SetSymbole("*");
                     }*/
-                    if (gridList.GetValue(x, y) != "  ")
+                    if (useDoubleSpace)
                     {
-                        gridList.SetValue(x, y, " ");
-                    }
+                        if (gridList.GetValue(x, y) != "  ")
+                        {
+                            gridList.SetValue(x, y, "  ");
+                        }
+                        else
+                        {
+                            gridList.SetValue(x, y, "* ");
+                        }
+                    } 
                     else
                     {
-                        gridList.SetValue(x, y, "*");
+                        if (gridList.GetValue(x, y) != " ")
+                        {
+                            gridList.SetValue(x, y, " ");
+                        }
+                        else
+                        {
+                            gridList.SetValue(x, y, "*");
+                        }
                     }
+                    
                 }
                 else if (keyInfo.Key == ConsoleKey.Tab)
                 {
@@ -130,7 +145,7 @@ namespace ConsoleGridEditor.Classes
                         }
                     }
                     gridList.SetValue(x, y, fields[currentIndex].GetValue(null).ToString());
-                    //if (gridList[x][y].DoubleSpace && gridList[x][y].GetSymbole().Length == 1) gridList[x][y].Symbole += " ";
+                    if (useDoubleSpace && gridList.GetValue(x, y).Length == 1) gridList.AppendValue(x, y, " ");
                 }
                 else if (keyInfo.Key == ConsoleKey.L)
                 {
@@ -173,9 +188,6 @@ namespace ConsoleGridEditor.Classes
                     gridRows = rows;
                     gridColumns = columns;
                     gridList = ResizeGridList(gridList, rows, columns, useDoubleSpace);
-                    // FIXME: Throws exception when the resize multipla times
-                    // FIXME: Throws exeption when trying to resize when the grid is bigger then screen
-                    // FIXME: It is weard when trying to rezise
                 }
 
                 CLearScreen();
@@ -192,11 +204,13 @@ namespace ConsoleGridEditor.Classes
                 {
                     if (row == 0 || row > rows - 2 || col == 0 || col > cols - 2)
                     {
-                        newList.SetValue(row, col, "*");
+                        if (useDoubleSpace) newList.SetValue(row, col, "* ");
+                        else newList.SetValue(row, col, "*");
                     }
                     else
                     {
-                        newList.SetValue(row, col, " ");
+                        if (useDoubleSpace) newList.SetValue(row, col, "  ");
+                        else newList.SetValue(row, col, " ");
                     }
                 }
             }
@@ -207,9 +221,11 @@ namespace ConsoleGridEditor.Classes
             for (int i = 0; i < minRows; i++)
             {
                 for (int j = 0; j < minCols; j++)
-                {
-                    if (newList.GetValue(i, j) != "* ")
+                { 
+                    // TBD: Implement the use of double space
+                    if (useDoubleSpace && newList.GetValue(i, j) != "* ")
                         newList.SetValue(i, j, original.GetValue(i, j));
+                    else if (newList.GetValue(i, j) != "*") newList.SetValue(i, j, original.GetValue(i, j));
                 }
                     
             }
@@ -227,17 +243,19 @@ namespace ConsoleGridEditor.Classes
         {
             Grid<string> gridList = new StringGrid(gridRows, gridColumns);
 
-            for (int rows = 0; rows < gridRows; rows++)
+            for (int row = 0; row < gridRows; row++)
             {
-                for (int columns = 0; columns < gridColumns; columns++)
+                for (int col = 0; col < gridColumns; col++)
                 {
-                    if (rows == 0 || rows > gridRows - 2 || columns == 0 || columns > gridColumns - 2)
+                    if (row == 0 || row > gridRows - 2 || col == 0 || col > gridColumns - 2)
                     {
-                        gridList.SetValue(rows, columns, "*");
+                        if (useDoubleSpace) gridList.SetValue(row, col, "* ");
+                        else gridList.SetValue(row, col, "*");
                     }
                     else
                     {
-                        gridList.SetValue(rows, columns, " ");
+                        if (useDoubleSpace) gridList.SetValue(row, col, "  ");
+                        else gridList.SetValue(row, col, " ");
                     }
                 }
             }
@@ -252,21 +270,6 @@ namespace ConsoleGridEditor.Classes
             {
                 for (int col = 0; col < gridList.ColumnCount(); col++)
                 {
-                    /*if (row == x && col == y)
-                    {
-                        if (editGrid[row, col].DoubleSpace)
-                        {
-                            toPrint += "+ ";
-                        }
-                        else
-                        {
-                            toPrint += "+";
-                        }
-                    }
-                    else
-                    {
-                        toPrint += editGrid[row, col].GetSymbole();
-                    }*/
                     toPrint += gridList.GetValue(row, col);
                 }
                 toPrint += "\n";
@@ -329,14 +332,6 @@ namespace ConsoleGridEditor.Classes
             string jsonString = File.ReadAllText(fileName);
 
             Grid<string> grid = JsonSerializer.Deserialize<Grid<string>>(jsonString)!;
-            /*Grid[,] grid = new Grid[rows.Count, rows[0].Length];
-            for (int i = 0; i < rows.Count; i++)
-            {
-                for (int j = 0; j < rows[i].Length; j++)
-                {
-                    grid[i, j] = rows[i][j];
-                }
-            }*/
 
             return grid;
         }
