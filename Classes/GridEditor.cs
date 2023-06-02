@@ -288,7 +288,7 @@ namespace ConsoleGridEditor.Classes
             File.WriteAllText(DefaultDir + fileName + ".json", jsonString);
         }
 
-        public static string[] GetJsonFiles()
+        public static string[] GetJsonFiles() // FIXME: Kastar DirectoryNotFoundException om mappen inte finns
         {
             return Directory.GetFiles(DefaultDir, "*.json", SearchOption.AllDirectories);
         }
