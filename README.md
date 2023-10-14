@@ -1,6 +1,6 @@
 # ConsoleGridEditor
-![ConsoleGridEditor Badge](https://img.shields.io/badge/Console_Grid--Editor?logo=csharp&color=%23512BD4)
-
+![ConsoleGridEditor Badge](https://img.shields.io/badge/Grid_Editor--Consol?logo=csharp&color=%23512BD4)
+![grid](https://github.com/morre95/ConsoleGridEditor/assets/31042/f2527504-6d1d-494b-b0b4-73866af02256)
 
 ## Overview
 
