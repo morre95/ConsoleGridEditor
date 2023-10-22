@@ -14,3 +14,7 @@
 1. Clone the repository:
    ```shell
    git clone https://github.com/morre95/ConsoleGridEditor.git
+
+## Licens
+Det här projektet är licensierat under MIT-licensen. Se [LICENSE](LICENSE) för detaljer.
+
